@@ -1017,7 +1017,7 @@ contract nGASDriller is Ownable {
         emit Deposit(msg.sender, _pid, _amountMinusFees);
     }
 
-    // Withdraw LP tokens from MasterChef.
+    // Withdraw LP tokens from AdminAccount.
     function withdraw(uint256 _pid, uint256 _amount) public {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
