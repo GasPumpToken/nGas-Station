@@ -23,8 +23,8 @@ TotalSupply = 1M
 
 
 ## Deployed Contracts
-1. nGASToken.sol (0xFE86EA039f2A37fDFdD1B97a5fCa4CABC80B01B8)
-2. nGASAdmin.sol (0xc0Aed4f533825C2fa1202268991D43597101395a)
+1. nGASToken.sol [0xFE86EA039f2A37fDFdD1B97a5fCa4CABC80B01B8](https://etherscan.io/address/0xFE86EA039f2A37fDFdD1B97a5fCa4CABC80B01B8)
+2. nGASAdmin.sol [0xc0Aed4f533825C2fa1202268991D43597101395a](https://etherscan.io/address/0xc0Aed4f533825C2fa1202268991D43597101395a)
 3. nGASDriller.sol (0x)
 
         nGASDriller.sol calls
@@ -33,3 +33,5 @@ TotalSupply = 1M
         _NGASPERBLOCK = 10000000000000000000 //not defined yet!
         _STARTBLOCK = 11121337 //not defined yet! 
         _BONUSENDBLOCK = 99999999
+        
+[startblock](https://etherscan.io/block/countdown/11121337)
