@@ -830,7 +830,7 @@ contract ERC20 is Context, IERC20 {
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
 }
 //nGASToken
-contract nGASToken is ERC20("yield-farming.io", "nGAS"), Ownable {
+contract nGASToken is ERC20("pumpgasplatform.com", "nGAS"), Ownable {
     /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (Gas Driller).
     function mint(address _to, uint256 _amount) public onlyOwner {
         _mint(_to, _amount);
@@ -842,7 +842,7 @@ contract nGASToken is ERC20("yield-farming.io", "nGAS"), Ownable {
         return super.transferFrom(from, to, _partialBurn(from, amount));
     }
     function _partialBurn(address sender, uint256 amount) internal returns (uint256) {
-        uint256 burnAmount = (amount.mul(25)).div(1000);
+        uint256 burnAmount = (amount.mul(30)).div(1000); //3% will be burned every tx
         if (burnAmount > 0) {
             _burn(sender, burnAmount);
         }
