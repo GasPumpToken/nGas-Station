@@ -24,8 +24,8 @@ TotalSupply = 1M
 
 ## Deployed Contracts
 1. nGASToken.sol (0xFE86EA039f2A37fDFdD1B97a5fCa4CABC80B01B8)
-2. nGASAdmin.sol 
-3. nGASDriller.sol
+2. nGASAdmin.sol (0xc0Aed4f533825C2fa1202268991D43597101395a)
+3. nGASDriller.sol (0x)
 
         nGASDriller.sol calls
         _NGAS = 0xFE86EA039f2A37fDFdD1B97a5fCa4CABC80B01B8 //nGASToken
