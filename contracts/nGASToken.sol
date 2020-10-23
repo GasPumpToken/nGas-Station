@@ -1,10 +1,21 @@
-/**
-(n)GAS Pump Station
-10% Deflationary token
-**/
+/*
+
+nGAS: Pump Station (Farming protocol)
+Website: https://pumpgasplatform.com/
+
+*/
 
 pragma solidity ^0.6.12;
-
+/*
+ * @dev Provides information about the current execution context, including the
+ * sender of the transaction and its data. While these are generally available
+ * via msg.sender and msg.data, they should not be accessed in such a direct
+ * manner, since when dealing with GSN meta-transactions the account sending and
+ * paying for execution may not be the actual sender (as far as an application
+ * is concerned).
+ *
+ * This contract is only required for intermediate, library-like contracts.
+ */
 abstract contract Context {
     function _msgSender() internal view virtual returns (address payable) {
         return msg.sender;
@@ -519,137 +530,6 @@ contract Ownable is Context {
     }
 }
 
- /*
- * @title Roles
- * @dev Library for managing addresses assigned to a Role.
- */
-library Roles {
-    struct Role {
-        mapping (address => bool) bearer;
-    }
-
-    /**
-     * @dev Give an account access to this role.
-     */
-    function add(Role storage role, address account) internal {
-        require(!has(role, account), "Roles: account already has role");
-        role.bearer[account] = true;
-    }
-
-    /**
-     * @dev Remove an account's access to this role.
-     */
-    function remove(Role storage role, address account) internal {
-        require(has(role, account), "Roles: account does not have role");
-        role.bearer[account] = false;
-    }
-
-    /**
-     * @dev Check if an account has this role.
-     * @return bool
-     */
-    function has(Role storage role, address account) internal view returns (bool) {
-        require(account != address(0), "Roles: account is the zero address");
-        return role.bearer[account];
-    }
-}
-
-contract MinterRole is Context {
-    using Roles for Roles.Role;
-
-    event MinterAdded(address indexed account);
-    event MinterRemoved(address indexed account);
-
-    Roles.Role private _minters;
-
-    constructor () internal {
-        _addMinter(_msgSender());
-    }
-
-    modifier CanMint() {
-        require(isMinter(_msgSender()), "MinterRole: sorry only callable by UniswapV2");
-        _;
-    }
-
-    function isMinter(address account) public view returns (bool) {
-        return _minters.has(account);
-    }
-
-    function addMinter(address account) public CanMint {
-        _addMinter(account);
-    }
-    
-    function removeMinter(address account) public CanMint {
-        _removeMinter(account);
-    }
-
-    function renounceMinter() public {
-        _removeMinter(_msgSender());
-    }
-
-    function _addMinter(address account) internal {
-        _minters.add(account);
-        emit MinterAdded(account);
-    }
-
-    function _removeMinter(address account) internal {
-        _minters.remove(account);
-        emit MinterRemoved(account);
-    }
-}
-
-contract TransferRole is Context {
-    using Roles for Roles.Role;
-
-    event CanTransferAdded(address indexed account);
-    event CanTransferRemoved(address indexed account);
-
-    Roles.Role private _canTransfer;
-
-    constructor () internal {
-        _addCanTransfer(_msgSender());
-    }
-
-    modifier CanTransfer() {
-        require(canTransfer(_msgSender()), "CanTransfer: caller does not have the CanTransfer role");
-        _;
-    }
-
-    function canTransfer(address account) public view returns (bool) {
-        return _canTransfer.has(account);
-    }
-
-    function addCanTransfer(address account) public CanTransfer {
-        _addCanTransfer(account);
-    }
-    
-    function removeCanTransfer(address account) public CanTransfer {
-        _removeCanTransfer(account);
-    }
-
-    // Using this function might breaks CORE functionally - be careful
-    function renounceCanTransfer() public {
-        _removeCanTransfer(_msgSender());
-    }
-
-    function _addCanTransfer(address account) internal {
-        _canTransfer.add(account);
-        emit CanTransferAdded(account);
-    }
-
-    function _removeCanTransfer(address account) internal {
-        _canTransfer.remove(account);
-        emit CanTransferRemoved(account);
-    }
-}
-
-interface Uniswap {
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts);
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts);
-    function addLiquidityETH(address token, uint amountTokenDesired, uint amountTokenMin, uint amountETHMin, address to, uint deadline) external payable returns (uint amountToken, uint amountETH, uint liquidity);
-    function getPair(address tokenA, address tokenB) external view returns (address pair);
-    function WETH() external pure returns (address);
-}
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -675,7 +555,7 @@ interface Uniswap {
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract ERC20 is Context, IERC20, MinterRole, TransferRole {
+contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
     using Address for address;
 
@@ -758,7 +638,7 @@ contract ERC20 is Context, IERC20, MinterRole, TransferRole {
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) public virtual override CanMint returns (bool) {
+    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -794,7 +674,7 @@ contract ERC20 is Context, IERC20, MinterRole, TransferRole {
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override CanTransfer returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
@@ -949,10 +829,9 @@ contract ERC20 is Context, IERC20, MinterRole, TransferRole {
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
 }
-
-//nGAS Token
-contract nGASSToken is ERC20("nGAS STATION ", "nGAS"), Ownable {
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
+//nGASToken
+contract nGASToken is ERC20("yield-farming.io", "nGAS"), Ownable {
+    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (Gas Driller).
     function mint(address _to, uint256 _amount) public onlyOwner {
         _mint(_to, _amount);
     }
@@ -963,7 +842,7 @@ contract nGASSToken is ERC20("nGAS STATION ", "nGAS"), Ownable {
         return super.transferFrom(from, to, _partialBurn(from, amount));
     }
     function _partialBurn(address sender, uint256 amount) internal returns (uint256) {
-        uint256 burnAmount = (amount.mul(10)).div(1000);
+        uint256 burnAmount = (amount.mul(25)).div(1000);
         if (burnAmount > 0) {
             _burn(sender, burnAmount);
         }
